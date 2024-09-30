@@ -6,51 +6,61 @@
 \usage{
 computePower(X, Y, A, n, seed = 123,
 Nsim = 100, nperm = 200, alpha = 0.05,
-test = "R2", Y.prob = FALSE, eps = 0.01, ...)
+scaling = "auto-scaling", test = "R2",
+Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
+fast=FALSE,transformation = "clr")
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} variables and
+\item{X}{Data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the two classes and
+\item{Y}{Data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{A}{number of score components}
+\item{A}{Number of score components}
 
-\item{n}{sample size}
+\item{n}{Sample size}
 
-\item{seed}{seed value}
+\item{seed}{Seed value}
 
-\item{Nsim}{number of simulations}
+\item{Nsim}{Number of simulations}
 
-\item{nperm}{number of permutations}
+\item{nperm}{Number of permutations}
 
-\item{alpha}{type I error}
+\item{alpha}{Type I error level}
 
-\item{test}{type of test, one of \code{c("score", "mcc", "R2")}.}
+\item{scaling}{Type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default to "auto-scaling"}
 
-\item{Y.prob}{Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector}
+\item{test}{Type of test statistic, one of \code{c("score", "mcc", "R2")}. Default to "R2".}
 
-\item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.
-Default to "R2".}
+\item{Y.prob}{Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector}
 
-\item{...}{Futher parameters see \code{\link{PLSc}}}
+\item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector.}
+
+\item{post.transformation}{Boolean value. \code{TRUE} if you want to apply post transformation. Default to \code{TRUE}}
+
+\item{fast}{Use the function \code{fk_density} from the \code{FKSUM} \code{R} package for kernel density estimation. Default to \code{FALSE}.}
+
+\item{transformation}{Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".}
 }
 \value{
-Returns the corresponding estimated power
+Returns a matrix of estimated power for each number of components and tests selected.
 }
 \description{
-estimate power for a given sample size, alpha level and number
+Estimates power for a given sample size, type I error level and number
 of score components.
 }
 \examples{
-\donttest{
+\dontrun{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20)
+out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = "R2")
 }
 }
 \references{
-Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis for PLS-based methods" 	arXiv:2403.10289 stat.ME.
+For the general framework of power analysis for PLS-based methods see:
+
+Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 }
 \author{
 Angela Andreella

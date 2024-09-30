@@ -1,14 +1,18 @@
 #' @title Iteration Deflation Algorithm
 #' @description Performs Iteration Deflation Algorithm
 #' @usage IDA(X, Y, W)
-#' @param X data matrix where columns represent the \eqn{p} variables and
+#' @param X Data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y vector of class probabilities
-#' @param W weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.
+#' @param Y Vector of class probabilities
+#' @param W Weight matrix where columns represent the \eqn{A} components and rows the \code{X} variables. Computed from \code{\link{computeWT}}.
 #' @author Angela Andreella
 #' @return Returns a matrix of scores vectors \code{Tscore}.
 #' @export
+#' @references
+#'
+#' Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by orthogonal matrix: a new approach for generating predictive and orthogonal latent variables. Journal of Chemometrics, 30(5), 242-251.
 #' @keywords internal
+#' @seealso \code{\link{PLSc}}, \code{\link{computeWT}}
 
 
 IDA <- function(X, Y, W){

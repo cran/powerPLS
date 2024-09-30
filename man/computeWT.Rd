@@ -2,27 +2,29 @@
 % Please edit documentation in R/computeWT.R
 \name{computeWT}
 \alias{computeWT}
-\title{compute weight and score matrices from PLSc}
+\title{Compute weight and score matrices from PLSc}
 \usage{
 computeWT(X, Y, A)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} variables and
+\item{X}{Data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the two classes and
+\item{Y}{Data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{A}{number of score components}
+\item{A}{Number of score components}
 }
 \value{
-Returns a list with the following objects:
-- \code{W}: matrix of weights
-- \code{T_score}: matrix of Y scores
-- \code{R}: matrix of Y residuals
+List with the following objects:
+\describe{
+  \item{W}{Matrix of weights}
+  \item{T_score}{Matrix of \code{Y} scores}
+  \item{R}{Matrix of \code{Y} residuals}
+}
 }
 \description{
-compute weight and score matrices for Partial Least Squares classification
+Compute weight and score matrices for Partial Least Squares classification
 }
 \author{
 Angela Andreella

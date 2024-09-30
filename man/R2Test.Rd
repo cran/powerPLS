@@ -4,7 +4,9 @@
 \alias{R2Test}
 \title{R2 test}
 \usage{
-R2Test(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,...)
+R2Test(X, Y, nperm = 100, A, randomization = FALSE,
+Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
+post.transformation = TRUE)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
@@ -13,26 +15,31 @@ rows the \eqn{n} observations.}
 \item{Y}{data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{nperm}{number of permutations. Default 100.}
+\item{nperm}{number of permutations. Default to 200.}
 
 \item{A}{number of score components}
 
-\item{randomization}{Boolean value. Default @FALSE. If @TRUE the permutation p-value is computed}
+\item{randomization}{Boolean value. Default to \code{FALSE}. If \code{TRUE} the permutation p-value is computed}
 
-\item{Y.prob}{Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector}
+\item{Y.prob}{Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector}
 
 \item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
-\item{...}{Futher parameters.}
+\item{scaling}{Type of scaling, one of
+\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default "auto-scaling".}
+
+\item{post.transformation}{Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}}
 }
 \value{
-Returns a list with the corresponding statistical tests,
-raw and adjusted p-values
-
-List with the following objects: \code{pv}: raw p-value, \code{pv_adj}: adjusted p-value, \code{test} estimated statistical test.
+List with the following objects:
+\describe{
+  \item{pv}{raw p-value. It equals \code{NA} if \code{randomization = FALSE}}
+  \item{pv_adj}{adjusted p-value. It equals \code{NA} if \code{randomization = FALSE}}
+  \item{test}{estimated test statistic}
+}
 }
 \description{
-Performs randomization test based on R2
+Performs permutation-based test based on R2
 }
 \examples{
 datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
@@ -41,9 +48,11 @@ out
 }
 \references{
 For the general framework of power analysis for PLS-based methods see:
+
+Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 }
 \seealso{
-The type of tests implemented: \code{\link{scoreTest}} \code{\link{mccTest}}.
+Other test statistics implemented: \code{\link{mccTest}} \code{\link{scoreTest}}.
 }
 \author{
 Angela Andreella

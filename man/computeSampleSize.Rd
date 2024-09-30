@@ -2,52 +2,57 @@
 % Please edit documentation in R/computeSampleSize.R
 \name{computeSampleSize}
 \alias{computeSampleSize}
-\title{sample size estimation}
+\title{Sample size estimation}
 \usage{
 computeSampleSize(n, X, Y, A, alpha, beta,
 nperm, Nsim, seed, test = "R2",...)
 }
 \arguments{
-\item{n}{vector of sample sizes to consider}
+\item{n}{Vector of sample sizes to consider}
 
-\item{X}{data matrix where columns represent the \eqn{p} variables and
+\item{X}{Data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{data matrix where columns represent the two classes and
+\item{Y}{Data matrix where columns represent the two classes and
 rows the \eqn{n} observations.}
 
-\item{A}{number of score components}
+\item{A}{Number of score components}
 
-\item{alpha}{level of type I error. Default 0.05}
+\item{alpha}{Type I error level. Default to 0.05}
 
-\item{beta}{level of type II error. Default 0.2.}
+\item{beta}{Type II error level. Default to 0.2.}
 
-\item{nperm}{number of permutations. Default 100.}
+\item{nperm}{Number of permutations. Default to 100.}
 
-\item{Nsim}{number of simulations. Default 100.}
+\item{Nsim}{Number of simulations. Default to 100.}
 
-\item{seed}{seed value}
+\item{seed}{Seed value}
 
-\item{test}{type of test, one of \code{c("score", "mcc", "R2")}.
-Default to @R2.}
+\item{test}{Type of test, one of \code{c("score", "mcc", "R2")}.
+Default to "R2".}
 
-\item{...}{Futher parameters.}
+\item{...}{Further parameters.}
 }
 \value{
-Returns a dataframe that contains the estimated power for each
+Returns a data frame that contains the estimated power for each
 sample size and number of components considered
 }
 \description{
-Compute optimal sample size calculation
+Compute optimal sample size
 }
 \examples{
-\donttest{
+\dontrun{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, n = 20)
+out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = "R2")
 }
 }
 \references{
-Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis for PLS-based methods" 	arXiv:2403.10289 stat.ME.
+For the general framework of power analysis for PLS-based methods see:
+
+Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
+}
+\seealso{
+\code{\link{computePower}}
 }
 \author{
 Angela Andreella

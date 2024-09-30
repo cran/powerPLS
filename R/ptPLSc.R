@@ -1,23 +1,24 @@
 #' @title post transformed PLS
 #' @description Performs post transformed Partial Least Squares
 #' @usage ptPLSc(X, Y, W)
-#' @param X data matrix where columns represent the \eqn{p} variables and
+#' @param X Data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y vector of class probabilities
-#' @param W weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.
+#' @param Y Vector of class probabilities
+#' @param W Weight matrix where columns represent the \eqn{A} components and rows the \code{X} variables.
 #' @author Angela Andreella
-#' @return Returns a matrix of scores vectors \code{Tscore}.
 #' @export
 #' @importFrom nipals nipals
-#' @return Returns a list with the following objects:
-#' - \code{W}: matrix of weights
-#' - \code{6}: post transformation matrix
-#' - \code{M}: number of orthogonal components.
+#' @return List with the following objects:
+#' \describe{
+#'   \item{W}{Matrix of weights}
+#'   \item{G}{Post transformation matrix}
+#'   \item{M}{Number of orthogonal components}
+#' }
 #' @references
 #'
 #' Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by orthogonal matrix: a new approach for generating predictive and orthogonal latent variables. Journal of Chemometrics, 30(5), 242-251.
 #' @keywords internal
-
+#' @seealso \code{\link{PLSc}}, \code{\link{computeWT}}
 
 
 ptPLSc <- function(X, Y, W){

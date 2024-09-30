@@ -2,31 +2,45 @@
 % Please edit documentation in R/sim_XY.R
 \name{sim_XY}
 \alias{sim_XY}
-\title{simulate data matrix under the alternative hypothesis}
+\title{Simulate pilot data}
 \usage{
-sim_XY(out, n, seed = 123, post.transformation = TRUE, A)
+sim_XY(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE)
 }
 \arguments{
-\item{out}{output from \code{PLSc}}
+\item{out}{Output from \code{PLSc}}
 
-\item{n}{number of observations to simulate}
+\item{n}{Number of observations to simulate}
 
-\item{seed}{seed value}
+\item{seed}{Seed value}
 
-\item{post.transformation}{Boolean value. Default @TRUE i.e., post transformation is applied.}
+\item{post.transformation}{Boolean value. Default to \code{TRUE}, i.e., post transformation is applied in \code{PLSc}}
 
-\item{A}{number of score components used in \code{PLSc}.}
+\item{A}{Number of score components used in \code{PLSc}.}
+
+\item{fast}{Use the function \code{fk_density} from the \code{FKSUM} \code{R} package for kernel density estimation. Default to \code{FALSE}.}
 }
 \value{
-Returns a simulated matrix under the alternative hypothesis.
+Returns a list:
+\describe{
+  \item{Y_H1}{dependent variable, matrix with 2 columns and \code{n} rows (observations)}
+  \item{X_H1}{predictor variables, matrix with \code{n} rows (observations) and number of columns equal to \code{out$X} (i.e., original dataset)}
+}
 }
 \description{
-simulate data matrix under the alternative hypothesis
+Simulate data matrix under the alternative hypothesis with \code{n} observations by kernel density estimation
 }
 \examples{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- PLSc(X = datas$X, Y = datas$Y, A = 2)
-out_sim <- sim_XY(out = out, n = 10, A = 2)
+out <- PLSc(X = datas$X, Y = datas$Y, A = 3)
+out_sim <- sim_XY(out = out, n = 10, A = 3)
+}
+\references{
+For the general framework of power analysis for PLS-based methods see:
+
+Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
+}
+\seealso{
+\code{\link{PLSc}}, \code{\link{ptPLSc}}
 }
 \author{
 Angela Andreella

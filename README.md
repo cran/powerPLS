@@ -19,9 +19,9 @@ The main functions are
 
 
 ``` r
-datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,ncomp = 2)
-out <- computePower(X = datas$X, Y = datas$Y, A = 3)
-out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 3, n = c(10,20,30))
+datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = "R2")
+out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = "R2")
 ```
 
 ## References

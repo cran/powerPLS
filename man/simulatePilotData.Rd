@@ -2,36 +2,43 @@
 % Please edit documentation in R/simulatePilotData.R
 \name{simulatePilotData}
 \alias{simulatePilotData}
-\title{simulate pilot data}
+\title{Simulate pilot data}
 \usage{
 simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL)
 }
 \arguments{
-\item{seed}{seed value}
+\item{seed}{Seed value}
 
-\item{nvar}{number of variables}
+\item{nvar}{Number of variables}
 
 \item{clus.size}{Vector of two elements, specifying the size of classes (only two classes are considered)}
 
-\item{nvar_rel}{number of variables relevant to predict \code{Y}}
+\item{nvar_rel}{Number of variables relevant to predict the dependent variable}
 
-\item{m}{separation between classes}
+\item{m}{Effect size of separation between classes}
 
-\item{A}{oracle number of score components}
+\item{A}{Oracle number of score components}
 
-\item{S1}{covariance matrix for the first class. Default @NULL i.e., the identity is considered.}
+\item{S1}{Covariance matrix for the first class. Default \code{NULL}, i.e., the identity is considered.}
 
-\item{S2}{covariance matrix for the second class. Default @NULL i.e., the identity is considered.}
-}
-\value{
-Returns list of X and Y simulated data
+\item{S2}{Covariance matrix for the second class. Default\code{NULL}, i.e., the identity is considered.}
 }
 \description{
-simulate cluster pilot data
+Simulate cluster pilot data
 }
 \examples{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
 }
+\references{
+For the general framework of power analysis for PLS-based methods see:
+
+Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
+}
 \author{
 Angela Andreella
+ @return List with the following objects:
+\describe{
+  \item{X}{matrix of predictor variables with \code{nvar} columns and the sum of \code{clus.size} values as number of rows.}
+  \item{Y}{vector of dependent variable with the sum of \code{clus.size} values as length}
+}
 }

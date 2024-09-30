@@ -1,30 +1,32 @@
-#' @title PLS
-#' @description Performs Partial Least Squares two class
+#' @title PLS classification
+#' @description Performs Partial Least Squares classification
 #' @usage PLSc(X, Y, A, scaling = "auto-scaling", post.transformation = TRUE,
 #' eps = 0.01, Y.prob = FALSE, transformation = "ilr")
-#' @param X data matrix where columns represent the \eqn{p} variables and
+#' @param X Data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
-#' @param Y data matrix where columns represent the two classes and
+#' @param Y Data matrix where columns represent the two classes and
 #' rows the \eqn{n} observations.
-#' @param A number of score components
-#' @param scaling type of scaling, one of
-#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default @auto-scaling
-#' @param post.transformation Boolean value. @TRUE if you want to apply post transformation. Default @TRUE
+#' @param A Number of score components
+#' @param scaling Type of scaling, one of
+#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default to "auto-scaling"
+#' @param post.transformation Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
-#' @param Y.prob Boolean value. Default @FALSE. IF @TRUE \code{Y} is a probability vector
-#' @param transformation transformation used to map \code{Y} in probability data vector. The options are @ilr and @clr.
+#' @param Y.prob Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector
+#' @param transformation Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".
 #' Default @ilr.
 #' @author Angela Andreella
-#' @return Returns a list with the following objects:
-#' - \code{W}: matrix of weights
-#' - \code{X_loading}: matrix of \code{X} loading
-#' - \code{Y_loading}: matrix of \code{Y} loading
-#' - \code{X}: matrix of \code{X} data
-#' - \code{Y}: matrix of \code{Y} data
-#' - \code{T_score}: matrix of scores
-#' - \code{Y_fitted}: fitted \code{Y} matrix
-#' - \code{B}: Matrix regression coefficients
-#' - \code{M}: number of orthogonal components if post transformation is applied.
+#' @return List with the following objects:
+#' \describe{
+#'   \item{W}{Matrix of weights}
+#'   \item{X_loading}{Matrix of \code{X} loading}
+#'   \item{Y_loading}{Matrix of \code{Y} loading}
+#'   \item{X}{Matrix of \code{X} data (predictor variables)}
+#'   \item{Y}{Matrix of \code{Y} data (dependent variable)}
+#'   \item{T_score}{Matrix of scores}
+#'   \item{Y_fitted}{Fitted \code{Y} matrix}
+#'   \item{B}{Matrix regression coefficients}
+#'   \item{M}{Number of orthogonal components if \code{post.transformation=TRUE} is applied.}
+#'   }
 #' @importFrom compositions ilrInv
 #' @importFrom compositions ilr
 #' @importFrom compositions clr

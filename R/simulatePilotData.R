@@ -1,22 +1,30 @@
-#' @title simulate pilot data
-#' @description simulate cluster pilot data
+#' @title Simulate pilot data
+#' @description Simulate cluster pilot data
 #' @usage simulatePilotData(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL)
-#' @param seed seed value
-#' @param nvar number of variables
+#' @param seed Seed value
+#' @param nvar Number of variables
 #' @param clus.size Vector of two elements, specifying the size of classes (only two classes are considered)
-#' @param nvar_rel number of variables relevant to predict \code{Y}
-#' @param m separation between classes
-#' @param A oracle number of score components
-#' @param S1 covariance matrix for the first class. Default @NULL i.e., the identity is considered.
-#' @param S2 covariance matrix for the second class. Default @NULL i.e., the identity is considered.
+#' @param nvar_rel Number of variables relevant to predict the dependent variable
+#' @param m Effect size of separation between classes
+#' @param A Oracle number of score components
+#' @param S1 Covariance matrix for the first class. Default \code{NULL}, i.e., the identity is considered.
+#' @param S2 Covariance matrix for the second class. Default\code{NULL}, i.e., the identity is considered.
 #' @importFrom MASS mvrnorm
 #' @importFrom stats princomp
 #' @importFrom stats rnorm
+#' @importFrom stats runif
 #' @author Angela Andreella
-#' @return Returns list of X and Y simulated data
+#'  @return List with the following objects:
+#' \describe{
+  #'   \item{X}{matrix of predictor variables with \code{nvar} columns and the sum of \code{clus.size} values as number of rows.}
+  #'   \item{Y}{vector of dependent variable with the sum of \code{clus.size} values as length}
+  #' }
 #' @export
 #' @examples
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
+#' @references For the general framework of power analysis for PLS-based methods see:
+#'
+#' Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 
 simulatePilotData <- function(seed = 123, nvar, clus.size, nvar_rel,m, A = 2, S1 = NULL, S2 = NULL){
 

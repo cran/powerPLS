@@ -7,18 +7,24 @@
 IDA(X, Y, W)
 }
 \arguments{
-\item{X}{data matrix where columns represent the \eqn{p} variables and
+\item{X}{Data matrix where columns represent the \eqn{p} variables and
 rows the \eqn{n} observations.}
 
-\item{Y}{vector of class probabilities}
+\item{Y}{Vector of class probabilities}
 
-\item{W}{weight matrix where columns represent the \eqn{A} components and rows the \eqn{k} X variables.}
+\item{W}{Weight matrix where columns represent the \eqn{A} components and rows the \code{X} variables. Computed from \code{\link{computeWT}}.}
 }
 \value{
 Returns a matrix of scores vectors \code{Tscore}.
 }
 \description{
 Performs Iteration Deflation Algorithm
+}
+\references{
+Stocchero, M., & Paris, D. (2016). Post-transformation of PLS2 (ptPLS2) by orthogonal matrix: a new approach for generating predictive and orthogonal latent variables. Journal of Chemometrics, 30(5), 242-251.
+}
+\seealso{
+\code{\link{PLSc}}, \code{\link{computeWT}}
 }
 \author{
 Angela Andreella
