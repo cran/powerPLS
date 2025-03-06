@@ -8,4 +8,8 @@
 * Speed up the sim_XY function
 * Update documentation
 
+## version 0.2.1 [2025-03-05]
 
+* Update documentation
+* Add test statistics
+* Add cross-validation

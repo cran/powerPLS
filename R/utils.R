@@ -1,44 +1,43 @@
+# Utils
 
-#Utils
+# Fit Y
+fitY <- function(X, B, Mm, s, transformation = "clr") {
 
-#Fit Y
-fitY <- function(X, B, Mm, s, transformation = "clr"){
-
-  if(transformation == "clr"){
-    Y.fitted = matrix(apply(compositions::clrInv(s*(X %*% B) + Mm), 1, function(x)
-      which.max(x)),ncol = 1)
-    }
-  if(transformation == "ilr"){
-    Y.fitted = matrix(apply(compositions::ilrInv(s*(X %*% B) + Mm), 1, function(x)
-      which.max(x)),ncol = 1)
-    }
+  if (transformation == "clr") {
+    Y.fitted = matrix(apply(compositions::clrInv(s * (X %*% B) + Mm), 1, function(x) which.max(x)),
+                      ncol = 1)
+  }
+  if (transformation == "ilr") {
+    Y.fitted = matrix(apply(compositions::ilrInv(s * (X %*% B) + Mm), 1, function(x) which.max(x)),
+                      ncol = 1)
+  }
 
 
   Y.fitted = as.factor(Y.fitted)
   lev <- levels(Y.fitted)
-  if(length(lev)>1){
-    Y.fitted = model.matrix(~0+Y.fitted)
+  if (length(lev) > 1) {
+    Y.fitted = model.matrix(~0 + Y.fitted)
   }
 
 
   return(Y.fitted)
 }
 
-permuteIndex <- function(Y, by.row = TRUE, times, replace = FALSE){
+permuteIndex <- function(Y, by.row = TRUE, times, replace = FALSE) {
 
-  if(by.row){
+  if (by.row) {
     idx <- sample(seq(nrow(Y)), size = times, replace = replace)
-    Y <- Y[idx,]
-  }else{
-    idx <- sample(seq(ncol(Y)), size =times, replace = replace)
-    Y <- Y[,idx]
+    Y <- Y[idx, ]
+  } else {
+    idx <- sample(seq(ncol(Y)), size = times, replace = replace)
+    Y <- Y[, idx]
   }
-return(Y)
+  return(Y)
 }
 
-similarityMatrix <- function(X, Y){
+similarityMatrix <- function(X, Y) {
 
-  tr <- function(X){
+  tr <- function(X) {
 
     return(sum(diag(X)))
   }
@@ -49,26 +48,87 @@ similarityMatrix <- function(X, Y){
   YX <- Y %*% t(X)
 
 
-  #RV index (Escoufier, 1973; Robert and Escoufier, 1976)
+  # RV index (Escoufier, 1973; Robert and Escoufier, 1976)
   RV <- tr(XY %*% YX)/sqrt(tr(XX)^2 * tr(YY)^2)
-  #RLS index (Gower 1971; Lingoes and Schonemann (1974))
-  RLS <- sqrt(tr(crossprod(X) %*% crossprod(Y)))/ sqrt(tr(XX) %*% tr(YY))
+  # RLS index (Gower 1971; Lingoes and Schonemann (1974))
+  RLS <- sqrt(tr(crossprod(X) %*% crossprod(Y)))/sqrt(tr(XX) %*% tr(YY))
 
   out <- data.frame(RV = RV, RLS = RLS)
 
   return(out)
 }
 
-mcc <- function(confMatrix){
+mcc <- function(confMatrix) {
 
-  confMatrix <-stats::addmargins(confMatrix)
-  n11 <- confMatrix[1,1]
-  n22 <- confMatrix[2,2]
-  n12 <- confMatrix[1,2]
-  n21 <- confMatrix[2,1]
+  confMatrix <- stats::addmargins(confMatrix)
+  n11 <- confMatrix[1, 1]
+  n22 <- confMatrix[2, 2]
+  n12 <- confMatrix[1, 2]
+  n21 <- confMatrix[2, 1]
 
-  out <- (n11*n22 - n12*n21)/sqrt(confMatrix[1,3]*confMatrix[2,3]*confMatrix[3,1]*confMatrix[3,2])
-  if(is.nan(out)){out <- 0}
+  out <- (n11 * n22 - n12 * n21)/sqrt(confMatrix[1, 3] * confMatrix[2, 3] * confMatrix[3,
+                                                                                       1] * confMatrix[3, 2])
+  if (is.nan(out)) {
+    out <- 0
+  }
   return(out)
 
+}
+
+sensitivity <- function(confMatrix) {
+  out <- confMatrix["1", "1"]/(confMatrix["1", "1"] + confMatrix["1", "0"])
+
+  if (is.nan(out)) {
+    out <- 0
+  }
+  return(out)
+}
+
+specificity <- function(confMatrix) {
+  out <- confMatrix["0", "0"]/(confMatrix["0", "0"] + confMatrix["0", "1"])
+
+  if (is.nan(out)) {
+    out <- 0
+  }
+  return(out)
+}
+
+dQ2 <- function(Yf, Y_fitted, class = 1) {
+
+  Yf <- as.numeric(Yf) - 1
+  Y_fitted <- as.numeric(Y_fitted) - 1
+  if (class == 1) {
+    PRESSD <- sum((Yf[Y_fitted < class] - Y_fitted[Y_fitted < class])^2)
+  } else {
+    PRESSD <- sum((Yf[Y_fitted > class] - Y_fitted[Y_fitted > class])^2)
+  }
+  TSS <- sum((Yf - mean(Yf))^2)
+  out <- 1 - (PRESSD/TSS)
+
+  if (is.nan(out)) {
+    out <- 0
+  }
+  return(out)
+}
+
+F1 <- function(confMatrix) {
+  out <- (2 * confMatrix["1", "1"])/((2 * confMatrix["1", "1"]) + confMatrix["0", "1"] +
+                                       confMatrix["1", "0"])
+
+  if (is.nan(out)) {
+    out <- 0
+  }
+  return(out)
+}
+
+
+FM <- function(confMatrix) {
+  out1 <- confMatrix["1", "1"]/(confMatrix["1", "1"] + confMatrix["1", "0"])
+  out2 <- confMatrix["1", "1"]/(confMatrix["1", "1"] + confMatrix["0", "1"])
+
+  out <- sqrt(out1 * out2)
+  if (is.nan(out)) {
+    out <- 0
+  }
+  return(out)
 }

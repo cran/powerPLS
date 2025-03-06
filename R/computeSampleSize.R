@@ -1,7 +1,7 @@
 #' @title Sample size estimation
 #' @description Compute optimal sample size
 #' @usage computeSampleSize(n, X, Y, A, alpha, beta,
-#' nperm, Nsim, seed, test = "R2",...)
+#' nperm, Nsim, seed, test = 'R2',...)
 #' @param n Vector of sample sizes to consider
 #' @param X Data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
@@ -13,8 +13,8 @@
 #' @param Nsim Number of simulations. Default to 100.
 #' @param nperm Number of permutations. Default to 100.
 #' @param seed Seed value
-#' @param test Type of test, one of \code{c("score", "mcc", "R2")}.
-#' Default to "R2".
+#' @param test Type of test, one of \code{c('score', 'mcc', 'R2')}.
+#' Default to 'R2'.
 #' @param ... Further parameters.
 #' @author Angela Andreella
 #' @return Returns a data frame that contains the estimated power for each
@@ -25,7 +25,7 @@
 #' @examples
 #' \dontrun{
 #' datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-#' out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = "R2")
+#' out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = 'R2')
 #' }
 #' @references For the general framework of power analysis for PLS-based methods see:
 #'
@@ -33,23 +33,18 @@
 #' @seealso \code{\link{computePower}}
 
 
-computeSampleSize <- function(n, X, Y, A, alpha = 0.05, beta = 0.2,
-                              nperm = 100, Nsim = 100, seed = 123, test = "R2",...){
+computeSampleSize <- function(n, X, Y, A, alpha = 0.05, beta = 0.2, nperm = 100, Nsim = 100,
+                              seed = 123, test = "R2", ...) {
 
-samplesize <- foreach(x = seq(length(n)), .combine=cbind) %dopar%
-    {
-      computePower(X = X, Y = Y, A = A,
-                   n = n[x], nperm = nperm, Nsim = Nsim,
-                   alpha = alpha, test = test, ...)
-    }
+  samplesize <- foreach(x = seq(length(n)), .combine = cbind) %dopar% {
+    computePower(X = X, Y = Y, A = A, n = n[x], nperm = nperm, Nsim = Nsim, alpha = alpha,
+                 test = test, ...)
+  }
 
-  samplesize <- list(size = n,
-                     power = samplesize,
-                     A = A)
+  samplesize <- list(size = n, power = samplesize, A = A)
 
-  out <- data.frame(Power = as.vector(t(samplesize$power)),
-                    Size = rep(n ),
-                    A =rep(seq(A), each =length(n)))
+  out <- data.frame(Power = as.vector(t(samplesize$power)), Size = rep(n), A = rep(seq(A),
+                                                                                   each = length(n)))
 
 
   return(out)

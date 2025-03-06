@@ -21,54 +21,56 @@
 #' @seealso \code{\link{PLSc}}, \code{\link{computeWT}}
 
 
-ptPLSc <- function(X, Y, W){
+ptPLSc <- function(X, Y, W) {
 
 
-  #TODO::put check if Y is transformed.
+  # TODO::put check if Y is transformed.
 
   A <- ncol(W)
- # out <- svd(t(Y) %*% X %*% W)
-  rownames(W) <-NULL
+  # out <- svd(t(Y) %*% X %*% W)
+  rownames(W) <- NULL
   colnames(X) <- NULL
   Y <- as.matrix(Y)
   X <- as.matrix(X)
   W <- as.matrix(W)
-  out <- nipals::nipals(t(Y) %*% X %*% W, center =FALSE, scale = FALSE)
-#  V <- out$v
+  out <- nipals::nipals(t(Y) %*% X %*% W, center = FALSE, scale = FALSE)
+  # V <- out$v
   V <- out$loadings
- # M <- sum(Re(out$d) > 10^-8)
+  # M <- sum(Re(out$d) > 10^-8)
   M <- sum(Re(out$eig) > 10^-8)
-  V <- as.matrix(Re(V[,1:M]))
-#  d2<-eigen((diag(nrow(V))-V%*%t(V))%*%(t(W)%*%t(X)%*%X%*%W))
-  d2 <- nipals::nipals((diag(nrow(V))-V%*%t(V))%*%(t(W)%*%t(X)%*%X%*%W), center =FALSE, scale = FALSE)
-  #Compute orthogonal part
- # Go<-Re(d2$vectors[,1:M])
-  Go<-Re(d2$loadings[,1:M])
-  if(A ==1){Go<- 1}
- # lp <- c()
-  G<-Go
-  if(A !=M){
-  for (i in 1:(A-M)) {
-    Xp<-X-X%*%W%*%G%*%solve(t(G)%*%t(W)%*%t(X)%*%X%*%W%*%G)%*%t(G)%*%t(W)%*%t(X)%*%X
-   # d3<-eigen(t(diag(A)-Go%*%t(Go))%*%(t(W)%*%t(Xp)%*%Y%*%t(Y)%*%Xp%*%W))
-    d3 <- nipals::nipals(t(diag(A)-Go%*%t(Go))%*%(t(W)%*%t(Xp)%*%Y%*%t(Y)%*%Xp%*%W), center =FALSE, scale = FALSE)
-   # Gp<-Re(d3$vectors[,1])
-    Gp<-Re(d3$loadings[,1])
-   # lp[i]<-d3$values[1]
-    G<-cbind(G,Gp)
+  V <- as.matrix(Re(V[, 1:M]))
+  # d2<-eigen((diag(nrow(V))-V%*%t(V))%*%(t(W)%*%t(X)%*%X%*%W))
+  d2 <- nipals::nipals((diag(nrow(V)) - V %*% t(V)) %*% (t(W) %*% t(X) %*% X %*% W), center = FALSE,
+                       scale = FALSE)
+  # Compute orthogonal part Go<-Re(d2$vectors[,1:M])
+  Go <- Re(d2$loadings[, 1:M])
+  if (A == 1) {
+    Go <- 1
   }
+  # lp <- c()
+  G <- Go
+  if (A != M) {
+    for (i in 1:(A - M)) {
+      Xp <- X - X %*% W %*% G %*% solve(t(G) %*% t(W) %*% t(X) %*% X %*% W %*% G) %*%
+        t(G) %*% t(W) %*% t(X) %*% X
+      # d3<-eigen(t(diag(A)-Go%*%t(Go))%*%(t(W)%*%t(Xp)%*%Y%*%t(Y)%*%Xp%*%W))
+      d3 <- nipals::nipals(t(diag(A) - Go %*% t(Go)) %*% (t(W) %*% t(Xp) %*% Y %*%
+                                                            t(Y) %*% Xp %*% W), center = FALSE, scale = FALSE)
+      # Gp<-Re(d3$vectors[,1])
+      Gp <- Re(d3$loadings[, 1])
+      # lp[i]<-d3$values[1]
+      G <- cbind(G, Gp)
+    }
   }
 
-  if((A-M) <= min(qr(Y)$rank, A)){
+  if ((A - M) <= min(qr(Y)$rank, A)) {
     warning("The minimum number of predictive latent variables is greater than min(rank(Y), A)")
   }
 
 
-  #apply G to weight matrix
-  Wtilde <- W %*% G #nX times ncomp
+  # apply G to weight matrix
+  Wtilde <- W %*% G  #nX times ncomp
 
-  return(list(Wtilde = Wtilde,
-              G = G,
-              M = M))
+  return(list(Wtilde = Wtilde, G = G, M = M))
 
 }

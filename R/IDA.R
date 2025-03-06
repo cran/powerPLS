@@ -15,9 +15,9 @@
 #' @seealso \code{\link{PLSc}}, \code{\link{computeWT}}
 
 
-IDA <- function(X, Y, W){
+IDA <- function(X, Y, W) {
 
-  #TODO::put check if Y is transformed.
+  # TODO::put check if Y is transformed.
 
 
   n <- nrow(X)
@@ -29,20 +29,21 @@ IDA <- function(X, Y, W){
   R[[1]] <- Y
   Tscore <- matrix(NA, nrow = n, ncol = A)
 
-  for(a in seq(A)){
+  for (a in seq(A)) {
 
-    #score vector t_i
-    Tscore[,a] <- E[[a]] %*% W[,a]
+    # score vector t_i
+    Tscore[, a] <- E[[a]] %*% W[, a]
 
-    #Orthogonal projection matrix of scores
-    Q[[a]] <- diag(n) - Tscore[,a] %*% solve(t(Tscore[,a]) %*% Tscore[,a]) %*% t(Tscore[,a])
+    # Orthogonal projection matrix of scores
+    Q[[a]] <- diag(n) - Tscore[, a] %*% solve(t(Tscore[, a]) %*% Tscore[, a]) %*% t(Tscore[,
+                                                                                           a])
 
-    #Deflation step
+    # Deflation step
 
-    #X-deflation step
-    E[[a+1]] <- Q[[a]] %*% E[[a]] #residual matrix X
-    #Y-deflation step
-    R[[a+1]] <- Q[[a]] %*% R[[a]] #residual matrix Y
+    # X-deflation step
+    E[[a + 1]] <- Q[[a]] %*% E[[a]]  #residual matrix X
+    # Y-deflation step
+    R[[a + 1]] <- Q[[a]] %*% R[[a]]  #residual matrix Y
   }
 
   return(Tscore)

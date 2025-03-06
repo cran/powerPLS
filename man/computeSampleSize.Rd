@@ -5,7 +5,7 @@
 \title{Sample size estimation}
 \usage{
 computeSampleSize(n, X, Y, A, alpha, beta,
-nperm, Nsim, seed, test = "R2",...)
+nperm, Nsim, seed, test = 'R2',...)
 }
 \arguments{
 \item{n}{Vector of sample sizes to consider}
@@ -28,8 +28,8 @@ rows the \eqn{n} observations.}
 
 \item{seed}{Seed value}
 
-\item{test}{Type of test, one of \code{c("score", "mcc", "R2")}.
-Default to "R2".}
+\item{test}{Type of test, one of \code{c('score', 'mcc', 'R2')}.
+Default to 'R2'.}
 
 \item{...}{Further parameters.}
 }
@@ -43,7 +43,7 @@ Compute optimal sample size
 \examples{
 \dontrun{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = "R2")
+out <- computeSampleSize(X = datas$X, Y = datas$Y, A = 2, A = 3, n = 20, test = 'R2')
 }
 }
 \references{

@@ -27,14 +27,14 @@
 #'
 #' Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 
-sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE){
+sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FALSE) {
 
 
   set.seed(seed)
 
-  if(post.transformation){
+  if (post.transformation) {
     M <- out$M
-  }else{
+  } else {
     M <- A
   }
 
@@ -43,77 +43,74 @@ sim_XY <- function(out, n, seed = 123, post.transformation = TRUE, A, fast = FAL
   Y_loading <- out$Y_loading
   B <- out$B
   X <- out$X
-  if(A == M){
+  if (A == M) {
     T_scoreO <- T_score
-   # sim_TO <- sapply(seq(A), function(x) {
-   #   out_kde <- fk_density(x = T_scoreO[,x])
-    #  sample(out_kde$x, size = n, prob = out_kde$y)}
-   # )
-    sim_TO <- sapply(seq(ncol(T_scoreO)),function(x){
-      if(fast){
-      out_kde <- fk_density(x = T_scoreO[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)
-     # kde_transf <- ks::kde(x = T_scoreO[,x])
-     # ks::rkde(n = n, fhat = kde_transf)
-        }
-      else{
-      simulate_kde(x = T_scoreO[,x], n = n)$random.values
+    # sim_TO <- sapply(seq(A), function(x) { out_kde <- fk_density(x =
+    # T_scoreO[,x]) sample(out_kde$x, size = n, prob = out_kde$y)} )
+    sim_TO <- sapply(seq(ncol(T_scoreO)), function(x) {
+      if (fast) {
+        out_kde <- fk_density(x = T_scoreO[, x])
+        sample(out_kde$x, size = n, prob = out_kde$y)
+        # kde_transf <- ks::kde(x = T_scoreO[,x]) ks::rkde(n = n, fhat =
+        # kde_transf)
+      } else {
+        simulate_kde(x = T_scoreO[, x], n = n)$random.values
       }
     })
 
-    T_sim <- sim_TO #T target
-  }else{
-    T_scoreO <- T_score[,1:M]
-    if(is.null(ncol(T_score[,((M+1):A)]))){
+    T_sim <- sim_TO  #T target
+  } else {
+    T_scoreO <- T_score[, 1:M]
+    if (is.null(ncol(T_score[, ((M + 1):A)]))) {
       ncp <- 1
-    }else{
-      ncp <- ncol(T_score[,((M+1):A)])
+    } else {
+      ncp <- ncol(T_score[, ((M + 1):A)])
     }
 
-    if(is.null(ncol(T_score[,1:M]))){
+    if (is.null(ncol(T_score[, 1:M]))) {
       nco <- 1
-    }else{
-      nco <- ncol(T_score[,1:M])
+    } else {
+      nco <- ncol(T_score[, 1:M])
     }
 
-    T_scoreO <- matrix(T_score[,(1:M)], ncol = nco)
-    T_scoreP <- matrix(T_score[,((M+1):A)], ncol = ncp)
+    T_scoreO <- matrix(T_score[, (1:M)], ncol = nco)
+    T_scoreP <- matrix(T_score[, ((M + 1):A)], ncol = ncp)
 
-    sim_TP <- sapply(seq(ncol(T_scoreP)),function(x){
-      if(fast){
-      out_kde <- fk_density(x = T_scoreP[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)
-     # kde_transf <- ks::kde(x = T_scoreP[,x])
-     # ks::rkde(n = n, fhat = kde_transf)
-      }else{
-        simulate_kde(x = T_scoreP[,x], n = n)$random.values
+    sim_TP <- sapply(seq(ncol(T_scoreP)), function(x) {
+      if (fast) {
+        out_kde <- fk_density(x = T_scoreP[, x])
+        sample(out_kde$x, size = n, prob = out_kde$y)
+        # kde_transf <- ks::kde(x = T_scoreP[,x]) ks::rkde(n = n, fhat =
+        # kde_transf)
+      } else {
+        simulate_kde(x = T_scoreP[, x], n = n)$random.values
       }
-      })
+    })
 
-    sim_TO <- sapply(seq(ncol(T_scoreO)),function(x){
-      if(fast){
-      out_kde <- fk_density(x = T_scoreO[,x])
-      sample(out_kde$x, size = n, prob = out_kde$y)
-    #  kde_transf <- ks::kde(x = T_scoreO[,x])
-    #  ks::rkde(n = n, fhat = kde_transf)
-      }else{
-        simulate_kde(x = T_scoreO[,x], n = n)$random.values
+    sim_TO <- sapply(seq(ncol(T_scoreO)), function(x) {
+      if (fast) {
+        out_kde <- fk_density(x = T_scoreO[, x])
+        sample(out_kde$x, size = n, prob = out_kde$y)
+        # kde_transf <- ks::kde(x = T_scoreO[,x]) ks::rkde(n = n, fhat =
+        # kde_transf)
+      } else {
+        simulate_kde(x = T_scoreO[, x], n = n)$random.values
       }
-      })
-    #  sim_TP <- scale(sim_TP, center = FALSE)
-    #  sim_TO <- scale(sim_TO, center = FALSE)
+    })
+    # sim_TP <- scale(sim_TP, center = FALSE) sim_TO <- scale(sim_TO, center =
+    # FALSE)
 
 
-    T_sim <- cbind(sim_TO, sim_TP) #T target
+    T_sim <- cbind(sim_TO, sim_TP)  #T target
 
   }
 
   out1 <- svd(T_sim %*% t(T_score) %*% T_score)
 
   S <- (t(T_score) %*% T_score)
-  if(length(S)==1){
+  if (length(S) == 1) {
     T_new <- out1$u %*% t(out1$v) %*% diag(S)^(1/2)
-  }else{
+  } else {
     T_new <- out1$u %*% t(out1$v) %*% diag(diag(S))^(1/2)
   }
 

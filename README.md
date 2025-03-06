@@ -30,4 +30,4 @@ Andreella, A., Finos, L., Scarpa, B. and Stocchero, M. "Towards a power analysis
 
 ## Did you find some bugs?
 
-Please write to angela.andreella[\at]unive[\dot]it or insert a reproducible example using reprex on my issue github page.
+Please write to angela.andreella[\at]unitn[\dot]it or insert a reproducible example using reprex on my issue github page.

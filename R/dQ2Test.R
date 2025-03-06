@@ -1,8 +1,8 @@
-#' @title R2 test
-#' @description Performs permutation-based test based on R2
-#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE,
+#' @title dQ2 test
+#' @description Performs permutation-based test based on dQ2
+#' @usage dQ2Test(X, Y, nperm = 200, A, randomization = FALSE,
 #' Y.prob = FALSE, eps = 0.01, scaling = 'auto-scaling',
-#' post.transformation = TRUE, cross.validation = FALSE, seed = 123, ...)
+#' post.transformation = TRUE, class = 1, cross.validation = FALSE, ...)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
@@ -15,15 +15,15 @@
 #' @param scaling Type of scaling, one of
 #' \code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default 'auto-scaling'.
 #' @param post.transformation Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}
+#' @param class Numeric value. Specifiy the reference class. Default \code{1}
 #' @param cross.validation Boolean value. Default \code{FALSE}. \code{TRUE} if you want to compute the observed test statistic by Nested cross-validation
-#' @param seed Seed value
 #' @param ... additional arguments related to \code{cross.validation}. See \code{\link{repeatedCV_test}}
 #' @author Angela Andreella
 #' @importFrom compositions ilr
 #' @importFrom stats cor
 #' @export
 #' @seealso Other test statistics implemented: \code{\link{mccTest}}, \code{\link{scoreTest}},
-#' \code{\link{sensitivityTest}}, \code{\link{specificityTest}},\code{\link{AUCTest}}, \code{\link{dQ2Test}},
+#' \code{\link{sensitivityTest}}, \code{\link{specificityTest}},\code{\link{AUCTest}}, \code{\link{R2Test}},
 #' \code{\link{FMTest}}, \code{\link{F1Test}}.
 #' @author Angela Andreella
 #' @return List with the following objects:
@@ -36,79 +36,75 @@
 #' @references For the general framework of power analysis for PLS-based methods see:
 #'
 #' Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
-
 #' @examples
-#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-#' out <- R2Test(X = datas$X, Y = datas$Y, A = 1)
+#' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 1)
+#' out <- dQ2Test(X = datas$X, Y = datas$Y, A = 1)
 #' out
 
 
-R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
-                   scaling = "auto-scaling", post.transformation = TRUE,
-                   cross.validation = FALSE, seed = 123, ...) {
 
-  set.seed(seed)
 
-  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation,
-              eps = eps, Y.prob = Y.prob, transformation = "ilr")
+dQ2Test <- function(X, Y, nperm = 200, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
+                    scaling = "auto-scaling", post.transformation = TRUE, class = 1, cross.validation = FALSE,
+                    ...) {
 
-  if (!Y.prob) {
+  out <- PLSc(X = X, Y = Y, A = A, transformation = "clr", scaling = scaling, post.transformation = post.transformation,
+              eps = eps, Y.prob = Y.prob)
 
-    if (is.null(dim(Y)) | ncol(as.matrix(Y)) == 1) {
-      Yf <- as.matrix(Y)
+  # Fitted from pilot data
+  rownames(out$Y_fitted) <- NULL
+  if (is.null(dim(out$Y_fitted))) {
+    Y_fitted <- as.factor(out$Y_fitted)
 
-      if (!is.factor(Yf)) {
-        Yf <- as.factor(Yf)
-
-      }
-      levels(Yf) <- c(0, 1)
-      Yf <- model.matrix(~0 + Yf)
-    }
-
-    # Transform to probability matrix
-    Yf[which(Yf == 0)] <- eps
-    Yf[which(Yf == 1)] <- 1 - (ncol(Yf) - 1) * eps
-
-    # Centered log ratio transform transformation
-    P <- matrix(ilr(Yf), ncol = 1)
   } else {
-    P <- Y
-  }
-  s <- sd(P)
-  Yfitted = matrix(ilrInv(s * (X %*% out$B))[, 3], ncol = 1)
+    Y_fitted <- as.factor(out$Y_fitted[, 2])
 
-  # observed R2
+  }
+
+  # Observed one
+  Yf <- as.factor(Y)
+
+  # check levels
+  levels(Yf) <- c(0, 1)
+  levels(Y_fitted) <- c(0, 1)
+
+  # dQ2 observed
   if (cross.validation) {
-    r2_obs <- repeatedCV_test(data = X, labels = Y, A = A, test_type = "R2Test", ...)
+    dQ2_obs <- repeatedCV_test(data = X, labels = Y, A = A, test_type = "dQ2Test", ...)
   } else {
-    r2_obs <- cor(Yfitted, P)[[1]]
+    dQ2_obs <- dQ2(Yf, Y_fitted, class = class)
   }
+
 
   if (randomization) {
     null_distr <- replicate(nperm - 1, {
-
+      # Permute rows
       idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
       Xkp <- X[idx, ]
 
-      out <- PLSc(X = Xkp, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation,
-                  eps = eps, Y.prob = Y.prob, transformation = "ilr")
+      # Compute Y fitted
+      out <- PLSc(X = Xkp, Y = Y, A = A, transformation = "clr", scaling = scaling,
+                  post.transformation = post.transformation, eps = eps, Y.prob = Y.prob)
+
+      rownames(out$Y_fitted) <- NULL
+
+      # Compute permuted dQ2
+      Y_fitted <- as.factor(out$Y_fitted[, 2])
+      levels(Y_fitted) <- c(0, 1)
+      dQ2(Yf, Y_fitted, class = class)
 
 
-      Yfitted = matrix(ilrInv(s * (Xkp %*% out$B))[, 3], ncol = 1)
-
-
-      cor(Yfitted, P)[[1]]
 
     })
-    null_distr <- c(r2_obs, null_distr)
-    pv <- mean(null_distr >= r2_obs)
+
+    null_distr <- c(dQ2_obs, null_distr)
+    pv <- mean(null_distr >= dQ2_obs)
+
 
   } else {
     pv <- NA
   }
 
 
-
-  return(list(pv = pv, pv_adj = min(pv * A, 1), test = r2_obs))
-
+  return(list(pv = pv, pv_adj = min(pv * A, 1), test = dQ2_obs))
 }

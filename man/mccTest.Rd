@@ -5,8 +5,8 @@
 \title{MCC test}
 \usage{
 mccTest(X, Y, nperm = 200, A, randomization = FALSE,
-Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
-post.transformation = TRUE)
+Y.prob = FALSE, eps = 0.01, scaling = 'auto-scaling',
+post.transformation = TRUE, cross.validation = FALSE, seed = 123, ...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
@@ -26,9 +26,15 @@ rows the \eqn{n} observations.}
 \item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
 \item{scaling}{Type of scaling, one of
-\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default "auto-scaling".}
+\code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default 'auto-scaling'.}
 
 \item{post.transformation}{Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}}
+
+\item{cross.validation}{Boolean value. Default \code{FALSE}. \code{TRUE} if you want to compute the observed test statistic by nested cross-validation}
+
+\item{seed}{Seed value}
+
+\item{...}{additional arguments related to \code{cross.validation}. See \code{\link{repeatedCV_test}}}
 }
 \value{
 List with the following objects:
@@ -42,7 +48,7 @@ List with the following objects:
 Performs permutation-based test based on Matthews Correlation Coefficient
 }
 \examples{
-datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 1)
+datas <- simulatePilotData(nvar = 30, clus.size = c(15,15),m = 6,nvar_rel = 5,A = 1)
 out <- mccTest(X = datas$X, Y = datas$Y, A = 1)
 out
 }
@@ -52,7 +58,9 @@ For the general framework of power analysis for PLS-based methods see:
 Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 }
 \seealso{
-Other test statistics implemented: \code{\link{scoreTest}} \code{\link{R2Test}}.
+Other test statistics implemented: \code{\link{AUCTest}}, \code{\link{scoreTest}},
+\code{\link{dQ2Test}}, \code{\link{sensitivityTest}},\code{\link{AUCTest}}, \code{\link{R2Test}},
+\code{\link{specificityTest}}, \code{\link{FMTest}}.
 }
 \author{
 Angela Andreella

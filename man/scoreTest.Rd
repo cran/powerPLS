@@ -5,8 +5,8 @@
 \title{Score test}
 \usage{
 scoreTest(X, Y, nperm = 200, A, randomization = FALSE,
-Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
-post.transformation = TRUE)
+Y.prob = FALSE, eps = 0.01, scaling = 'auto-scaling',
+post.transformation = TRUE, cross.validation = FALSE, seed = 123, ...)
 }
 \arguments{
 \item{X}{data matrix where columns represent the \eqn{p} variables and
@@ -26,9 +26,15 @@ rows the \eqn{n} observations.}
 \item{eps}{Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector}
 
 \item{scaling}{Type of scaling, one of
-\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default "auto-scaling".}
+\code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default 'auto-scaling'.}
 
 \item{post.transformation}{Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}}
+
+\item{cross.validation}{Boolean value. Default \code{FALSE}. \code{TRUE} if you want to compute the observed test statistic by Nested cross-validation}
+
+\item{seed}{Seed value}
+
+\item{...}{additional arguments related to \code{cross.validation}. See \code{\link{repeatedCV_test}}}
 }
 \value{
 List with the following objects:
@@ -52,7 +58,9 @@ For the general framework of power analysis for PLS-based methods see:
 Andreella, A., Fino, L., Scarpa, B., & Stocchero, M. (2024). Towards a power analysis for PLS-based methods. arXiv preprint \url{https://arxiv.org/abs/2403.10289}.
 }
 \seealso{
-Other test statistics implemented: \code{\link{mccTest}} \code{\link{R2Test}}.
+Other test statistics implemented: \code{\link{mccTest}}, \code{\link{R2Test}},
+\code{\link{sensitivityTest}}, \code{\link{specificityTest}},\code{\link{AUCTest}}, \code{\link{dQ2Test}},
+\code{\link{FMTest}}, \code{\link{F1Test}}.
 }
 \author{
 Angela Andreella

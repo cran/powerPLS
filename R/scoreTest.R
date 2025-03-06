@@ -1,8 +1,8 @@
 #' @title Score test
 #' @description Performs permutation-based test based on predictive score vector
 #' @usage scoreTest(X, Y, nperm = 200, A, randomization = FALSE,
-#' Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
-#' post.transformation = TRUE)
+#' Y.prob = FALSE, eps = 0.01, scaling = 'auto-scaling',
+#' post.transformation = TRUE, cross.validation = FALSE, seed = 123, ...)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
@@ -13,15 +13,20 @@
 #' @param Y.prob Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector
 #' @param eps Default 0.01. \code{eps} is used when \code{Y.prob = FALSE} to transform \code{Y} in a probability vector
 #' @param scaling Type of scaling, one of
-#' \code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default "auto-scaling".
+#' \code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default 'auto-scaling'.
 #' @param post.transformation Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}
+#' @param cross.validation Boolean value. Default \code{FALSE}. \code{TRUE} if you want to compute the observed test statistic by Nested cross-validation
+#' @param seed Seed value
+#' @param ... additional arguments related to \code{cross.validation}. See \code{\link{repeatedCV_test}}
 #' @author Angela Andreella
 #' @importFrom compositions ilr
 #' @importFrom stats cor
 #' @importFrom stats t.test
 #' @importFrom stats var
 #' @export
-#' @seealso Other test statistics implemented: \code{\link{mccTest}} \code{\link{R2Test}}.
+#' @seealso Other test statistics implemented: \code{\link{mccTest}}, \code{\link{R2Test}},
+#' \code{\link{sensitivityTest}}, \code{\link{specificityTest}},\code{\link{AUCTest}}, \code{\link{dQ2Test}},
+#' \code{\link{FMTest}}, \code{\link{F1Test}}.
 #' @author Angela Andreella
 #' @return List with the following objects:
 #' \describe{
@@ -42,114 +47,120 @@
 
 
 
-scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE,
-                      Y.prob = FALSE, eps = 0.01, scaling = "auto-scaling",
-                      post.transformation = TRUE){
+scoreTest <- function(X, Y, nperm = 200, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
+                      scaling = "auto-scaling", post.transformation = TRUE,
+                      cross.validation = FALSE, seed = 123, ...) {
 
-  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling,
-              post.transformation = post.transformation,
+  set.seed(seed)
+  out <- PLSc(X = X, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation,
               eps = eps, Y.prob = Y.prob, transformation = "clr")
 
 
   T_score <- out$T_score
 
-  if(!is.na(out$M)){
+  if (!is.na(out$M)) {
     M <- out$M
-  }else{
+  } else {
     M <- A
   }
 
-  if(A!=M){
-    Tp <- T_score[,(M+1):A]
-  }else{
+  if (A != M) {
+    Tp <- T_score[, (M + 1):A]
+  } else {
     Tp <- T_score
   }
 
   lev <- unique(as.vector(Y))
 
-  if(length(lev)!=2){stop("Y must be a binary variable")}
-
-  if(is.null(dim(Tp))){
-    Tp1 <- as.vector(Tp[Y == lev[1]])
-    Tp2 <- as.vector(Tp[Y == lev[2]])
-  }else{
-    Tp1 <- as.vector(Tp[Y == lev[1],])
-    Tp2 <- as.vector(Tp[Y == lev[2],])
+  if (length(lev) != 2) {
+    stop("Y must be a binary variable")
   }
 
-  if(length(Tp1)==1){
+  if (is.null(dim(Tp))) {
+    Tp1 <- as.vector(Tp[Y == lev[1]])
+    Tp2 <- as.vector(Tp[Y == lev[2]])
+  } else {
+    Tp1 <- as.vector(Tp[Y == lev[1], ])
+    Tp2 <- as.vector(Tp[Y == lev[2], ])
+  }
+
+  if (length(Tp1) == 1) {
     var1 <- 0
-  }else{
+  } else {
     var1 <- var(Tp1)
   }
 
-  if(length(Tp2)==1){
+  if (length(Tp2) == 1) {
     var2 <- 0
-  }else{
+  } else {
     var2 <- var(Tp2)
   }
 
-  effect_obs <- abs(mean(Tp1) - mean(Tp2)) / sqrt(var1/length(Tp1) + var2/length(Tp2))
+  if (cross.validation) {
+    effect_obs <- repeatedCV_test(data = X, labels = Y, A = A, test_type = "scoreTest",
+                                  ...)
+  } else {
+    effect_obs <- abs(mean(Tp1) - mean(Tp2))/sqrt(var1/length(Tp1) + var2/length(Tp2))
+  }
 
-  if(randomization){
 
-    null_distr <- replicate(nperm-1,{
+  if (randomization) {
 
-    idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
-    Xkp <- X[idx,]
+    null_distr <- replicate(nperm - 1, {
 
-    out <- PLSc(X = Xkp, Y = Y, A = A, scaling = scaling,
-                post.transformation = post.transformation,
-                eps = eps, Y.prob = Y.prob, transformation = "clr")
+      idx <- sample(seq(nrow(X)), nrow(X), replace = FALSE)
+      Xkp <- X[idx, ]
+
+      out <- PLSc(X = Xkp, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation,
+                  eps = eps, Y.prob = Y.prob, transformation = "clr")
 
 
       T_score <- out$T_score
       T_score
 
-      if(!is.na(out$M)){
+      if (!is.na(out$M)) {
         M <- out$M
-      }else{
+      } else {
         M <- A
       }
 
-      if(A!=M){
-        Tp <- T_score[,(M+1):A]
-      }else{
+      if (A != M) {
+        Tp <- T_score[, (M + 1):A]
+      } else {
         Tp <- T_score
       }
 
 
-      if(is.null(dim(Tp))){
+      if (is.null(dim(Tp))) {
         Tp1 <- as.vector(Tp[Y == lev[1]])
         Tp2 <- as.vector(Tp[Y == lev[2]])
-      }else{
-        Tp1 <- as.vector(Tp[Y == lev[1],])
-        Tp2 <- as.vector(Tp[Y == lev[2],])
+      } else {
+        Tp1 <- as.vector(Tp[Y == lev[1], ])
+        Tp2 <- as.vector(Tp[Y == lev[2], ])
       }
 
-      if(length(Tp1)==1){
+      if (length(Tp1) == 1) {
         var1 <- 0
-      }else{
+      } else {
         var1 <- var(Tp1)
       }
 
-      if(length(Tp2)==1){
+      if (length(Tp2) == 1) {
         var2 <- 0
-      }else{
+      } else {
         var2 <- var(Tp2)
       }
 
-      abs(mean(Tp1) - mean(Tp2)) / sqrt(var1/length(Tp1) + var2/length(Tp2))
+      abs(mean(Tp1) - mean(Tp2))/sqrt(var1/length(Tp1) + var2/length(Tp2))
 
     })
 
-    null_distr <-c(effect_obs, null_distr)
+    null_distr <- c(effect_obs, null_distr)
     pv <- mean(null_distr >= effect_obs)
-  }else{
+  } else {
     pv <- NA
   }
 
 
-  return(list(pv = pv,
-              pv_adj = min(pv*A,1), test = effect_obs))
+  return(list(pv = pv, pv_adj = min(pv * A, 1), test = effect_obs))
 }

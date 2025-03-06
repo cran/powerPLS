@@ -6,9 +6,9 @@
 \usage{
 computePower(X, Y, A, n, seed = 123,
 Nsim = 100, nperm = 200, alpha = 0.05,
-scaling = "auto-scaling", test = "R2",
+scaling = 'auto-scaling', test = 'R2',
 Y.prob = FALSE, eps = 0.01, post.transformation = TRUE,
-fast=FALSE,transformation = "clr")
+fast = FALSE, transformation = 'clr', ncores = NULL)
 }
 \arguments{
 \item{X}{Data matrix where columns represent the \eqn{p} variables and
@@ -30,9 +30,9 @@ rows the \eqn{n} observations.}
 \item{alpha}{Type I error level}
 
 \item{scaling}{Type of scaling, one of
-\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default to "auto-scaling"}
+\code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default to 'auto-scaling'}
 
-\item{test}{Type of test statistic, one of \code{c("score", "mcc", "R2")}. Default to "R2".}
+\item{test}{Type of test statistic, one of \code{c('score', 'mcc', 'R2')}. Default to 'R2'.}
 
 \item{Y.prob}{Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector}
 
@@ -42,7 +42,9 @@ rows the \eqn{n} observations.}
 
 \item{fast}{Use the function \code{fk_density} from the \code{FKSUM} \code{R} package for kernel density estimation. Default to \code{FALSE}.}
 
-\item{transformation}{Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".}
+\item{transformation}{Transformation used to map \code{Y} in probability data vector. The options are 'ilr' and 'clr'.}
+
+\item{ncores}{Number of cores, default NULL.}
 }
 \value{
 Returns a matrix of estimated power for each number of components and tests selected.
@@ -54,7 +56,7 @@ of score components.
 \examples{
 \dontrun{
 datas <- simulatePilotData(nvar = 10, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = "R2")
+out <- computePower(X = datas$X, Y = datas$Y, A = 3, n = 20, test = 'R2')
 }
 }
 \references{

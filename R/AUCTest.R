@@ -1,8 +1,8 @@
-#' @title R2 test
-#' @description Performs permutation-based test based on R2
-#' @usage R2Test(X, Y, nperm = 100, A, randomization = FALSE,
+#' @title AUC test
+#' @description Performs permutation-based test based on AUC
+#' @usage AUCTest(X, Y, nperm = 100, A, randomization = FALSE,
 #' Y.prob = FALSE, eps = 0.01, scaling = 'auto-scaling',
-#' post.transformation = TRUE, cross.validation = FALSE, seed = 123, ...)
+#' post.transformation = TRUE, cross.validation = FALSE,...)
 #' @param X data matrix where columns represent the \eqn{p} variables and
 #' rows the \eqn{n} observations.
 #' @param Y data matrix where columns represent the two classes and
@@ -16,15 +16,15 @@
 #' \code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default 'auto-scaling'.
 #' @param post.transformation Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}
 #' @param cross.validation Boolean value. Default \code{FALSE}. \code{TRUE} if you want to compute the observed test statistic by Nested cross-validation
-#' @param seed Seed value
 #' @param ... additional arguments related to \code{cross.validation}. See \code{\link{repeatedCV_test}}
 #' @author Angela Andreella
 #' @importFrom compositions ilr
-#' @importFrom stats cor
+#' @importFrom pROC auc
+#' @importFrom pROC roc
 #' @export
 #' @seealso Other test statistics implemented: \code{\link{mccTest}}, \code{\link{scoreTest}},
-#' \code{\link{sensitivityTest}}, \code{\link{specificityTest}},\code{\link{AUCTest}}, \code{\link{dQ2Test}},
-#' \code{\link{FMTest}}, \code{\link{F1Test}}.
+#' \code{\link{dQ2Test}}, \code{\link{sensitivityTest}},\code{\link{F1Test}}, \code{\link{R2Test}},
+#' \code{\link{specificityTest}}, \code{\link{FMTest}}.
 #' @author Angela Andreella
 #' @return List with the following objects:
 #' \describe{
@@ -39,15 +39,13 @@
 
 #' @examples
 #' datas <- simulatePilotData(nvar = 30, clus.size = c(5,5),m = 6,nvar_rel = 5,A = 2)
-#' out <- R2Test(X = datas$X, Y = datas$Y, A = 1)
+#' out <- AUCTest(X = datas$X, Y = datas$Y, A = 1)
 #' out
 
 
-R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
-                   scaling = "auto-scaling", post.transformation = TRUE,
-                   cross.validation = FALSE, seed = 123, ...) {
+AUCTest <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, eps = 0.01,
+                    scaling = "auto-scaling", post.transformation = TRUE, cross.validation = FALSE, ...) {
 
-  set.seed(seed)
 
   out <- PLSc(X = X, Y = Y, A = A, scaling = scaling, post.transformation = post.transformation,
               eps = eps, Y.prob = Y.prob, transformation = "ilr")
@@ -77,11 +75,12 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
   s <- sd(P)
   Yfitted = matrix(ilrInv(s * (X %*% out$B))[, 3], ncol = 1)
 
-  # observed R2
+  # observed AUC
+
   if (cross.validation) {
-    r2_obs <- repeatedCV_test(data = X, labels = Y, A = A, test_type = "R2Test", ...)
+    AUC_obs <- repeatedCV_test(data = X, labels = Y, A = A, test_type = "AUCTest", ...)
   } else {
-    r2_obs <- cor(Yfitted, P)[[1]]
+    AUC_obs <- suppressMessages(auc(roc(Y, as.numeric(Yfitted)))[1])
   }
 
   if (randomization) {
@@ -97,11 +96,11 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
       Yfitted = matrix(ilrInv(s * (Xkp %*% out$B))[, 3], ncol = 1)
 
 
-      cor(Yfitted, P)[[1]]
+      suppressMessages(auc(roc(Y, as.numeric(Yfitted)))[1])
 
     })
-    null_distr <- c(r2_obs, null_distr)
-    pv <- mean(null_distr >= r2_obs)
+    null_distr <- c(AUC_obs, null_distr)
+    pv <- mean(null_distr >= AUC_obs)
 
   } else {
     pv <- NA
@@ -109,6 +108,6 @@ R2Test <- function(X, Y, nperm = 100, A, randomization = FALSE, Y.prob = FALSE, 
 
 
 
-  return(list(pv = pv, pv_adj = min(pv * A, 1), test = r2_obs))
+  return(list(pv = pv, pv_adj = min(pv * A, 1), test = AUC_obs))
 
 }

@@ -4,8 +4,8 @@
 \alias{PLSc}
 \title{PLS classification}
 \usage{
-PLSc(X, Y, A, scaling = "auto-scaling", post.transformation = TRUE,
-eps = 0.01, Y.prob = FALSE, transformation = "ilr")
+PLSc(X, Y, A, scaling = 'auto-scaling', post.transformation = TRUE,
+eps = 0.01, Y.prob = FALSE, transformation = 'ilr')
 }
 \arguments{
 \item{X}{Data matrix where columns represent the \eqn{p} variables and
@@ -17,7 +17,7 @@ rows the \eqn{n} observations.}
 \item{A}{Number of score components}
 
 \item{scaling}{Type of scaling, one of
-\code{c("auto-scaling", "pareto-scaling", "mean-centering")}. Default to "auto-scaling"}
+\code{c('auto-scaling', 'pareto-scaling', 'mean-centering')}. Default to 'auto-scaling'}
 
 \item{post.transformation}{Boolean value. \code{TRUE} if you want to apply post transformation. Default \code{TRUE}}
 
@@ -25,7 +25,7 @@ rows the \eqn{n} observations.}
 
 \item{Y.prob}{Boolean value. Default \code{FALSE}. IF \code{TRUE} \code{Y} is a probability vector}
 
-\item{transformation}{Transformation used to map \code{Y} in probability data vector. The options are "ilr" and "clr".
+\item{transformation}{Transformation used to map \code{Y} in probability data vector. The options are 'ilr' and 'clr'.
 Default @ilr.}
 }
 \value{
